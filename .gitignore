@@ -1,0 +1,9 @@
+build/
+dist/
+config.json 
+log/
+__pycache__/
+.vscode/
+log.txt
+nuitka_dist/
+.nuitka-cache/
