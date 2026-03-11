@@ -41,7 +41,7 @@ if errorlevel 1 (
 )
 
 echo [START] Build CLI: %CLI_NAME%
-python -m nuitka --standalone --disable-cache=all --assume-yes-for-downloads --windows-console-mode=force %ICON_OPT% --output-dir="%OUTPUT_DIR%" --output-filename="%CLI_NAME%.exe" cli.py
+python -m nuitka --onefile --disable-cache=all --assume-yes-for-downloads --windows-console-mode=force %ICON_OPT% --output-dir="%OUTPUT_DIR%" --output-filename="%CLI_NAME%.exe" cli.py
 
 if errorlevel 1 (
   echo [ERROR] CLI Build failed.
@@ -53,10 +53,10 @@ echo [DONE] Build completed
 echo [START] Package output
 if not exist "%PACKAGE_DIR%" mkdir "%PACKAGE_DIR%"
 
-@REM
+@REM main.dist の中身（GUIと依存関係）をパッケージディレクトリにコピー
 xcopy /E /I /Y "%OUTPUT_DIR%\main.dist\*" "%PACKAGE_DIR%\" >nul
-@REM 
-xcopy /E /I /Y "%OUTPUT_DIR%\cli.dist\*" "%PACKAGE_DIR%\" >nul
+@REM cli.exe (単体ファイル) をパッケージディレクトリにコピー
+copy /Y "%OUTPUT_DIR%\%CLI_NAME%.exe" "%PACKAGE_DIR%\" >nul
 
 if errorlevel 1 (
   echo [ERROR] Copy to package directory failed.
