@@ -92,6 +92,7 @@ class RppRepack(QWidget):
         self.radio_zip = QRadioButton("ZIP 出力")
         self.radio_folder = QRadioButton("フォルダ出力")
         self.radio_zip.setChecked(True) 
+        self.radio_zip.toggled.connect(self.toggle_password_ui)
         output_layout.addWidget(self.radio_zip)
         output_layout.addWidget(self.radio_folder)
         layout.addLayout(output_layout)
@@ -138,7 +139,12 @@ class RppRepack(QWidget):
 
         self.setLayout(layout)
         self.setAcceptDrops(True)
+        self.toggle_password_ui()
 
+    def toggle_password_ui(self):
+        is_zip = self.radio_zip.isChecked()
+        self.password_checkbox.setVisible(is_zip)
+        self.password_input.setVisible(is_zip)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
