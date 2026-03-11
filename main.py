@@ -15,13 +15,28 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor, QFont, QIcon, QAction
 
-CONFIG_FILE = "config.json"
-LOG_DIR = "log"
-# 実行時の日時をファイル名に含める
+def get_base_dir():
+    """exeかpyかに応じてベースディレクトリを決定する"""
+    if getattr(sys, 'frozen', False) or not sys.argv[0].endswith('.py'):
+        # exeの場合 (Nuitka/PyInstaller等)
+        appdata = os.environ.get('APPDATA')
+        if not appdata:
+            appdata = os.path.expanduser('~')
+        base = os.path.join(appdata, "RppRepack")
+    else:
+        # pyの場合
+        base = os.path.dirname(os.path.abspath(__file__))
+    return base
+
+BASE_DIR = get_base_dir()
+os.makedirs(BASE_DIR, exist_ok=True)
+
+CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
+LOG_DIR = os.path.join(BASE_DIR, "log")
+
 _timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
 LOG_FILE = os.path.join(LOG_DIR, f"log_{_timestamp_str}.txt")
 
-# ログフォルダの作成
 os.makedirs(LOG_DIR, exist_ok=True)
 
 ERROR_CODES = {
@@ -76,7 +91,7 @@ class RppRepack(QWidget):
         output_layout = QHBoxLayout()
         self.radio_zip = QRadioButton("ZIP 出力")
         self.radio_folder = QRadioButton("フォルダ出力")
-        self.radio_zip.setChecked(True)  # デフォルトはZIP
+        self.radio_zip.setChecked(True) 
         output_layout.addWidget(self.radio_zip)
         output_layout.addWidget(self.radio_folder)
         layout.addLayout(output_layout)
@@ -197,6 +212,14 @@ class RppRepack(QWidget):
         except Exception:
             self.write_log(traceback.format_exc(), ERROR_CODES["CONFIG_SAVE_FAIL"])
 
+    def reset_ui(self):
+        """UIを初期状態に戻す（保存先設定は維持）"""
+        self.rpp_path = ""
+        self.drop_area.setText("ここに RPP ファイルをドラッグ & ドロップ")
+        self.progress_bar.setValue(0)
+        self.password_checkbox.setChecked(False)
+        self.password_input.clear()
+        self.radio_zip.setChecked(True)
 
     def _parse_rpp_files(self):
         try:
@@ -285,16 +308,16 @@ class RppRepack(QWidget):
             for f in files_to_add:
                 if f not in added_files:
                     zipf.write(f, os.path.basename(f))
-                    self.log_msg(f"[RppRepack] 追加: {f}")
+                    self.log_msg(f"[RppRepack] コピー: {f}")
                     files_added += 1
                     added_files.add(f)
                     self.progress_bar.setValue(files_added)
                     QApplication.processEvents()
 
         self.show_message(QMessageBox.Icon.Information, "完了",
-                          f"{files_added} 個のファイルをZIP化しました。\n\n保存先: {zip_path}")
-        self.progress_bar.setValue(0)
+                          f"{files_added} 個のファイルをZIPにまとめました。\n\n保存先: {zip_path}")
         self.log_msg("[RppRepack] === ZIP作成完了 ===")
+        self.reset_ui()
         self.open_in_explorer(zip_path)
 
     def _make_folder(self, project_name):
@@ -323,9 +346,9 @@ class RppRepack(QWidget):
             QApplication.processEvents()
 
         self.show_message(QMessageBox.Icon.Information, "完了",
-                          f"{files_copied} 個のファイルをフォルダにコピーしました。\n\n保存先: {folder_path}")
-        self.progress_bar.setValue(0)
+                          f"{files_copied} 個のファイルをフォルダにまとめました。\n\n保存先: {folder_path}")
         self.log_msg("[RppRepack] === フォルダ出力完了 ===")
+        self.reset_ui()
         self.open_in_explorer(folder_path)
 
     def show_message(self, icon, title, text):
