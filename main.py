@@ -60,7 +60,7 @@ class RppRepack(QWidget):
         self.load_config()
 
     def init_ui(self):
-        self.setWindowTitle("RppRepack v1.0")
+        self.setWindowTitle("RppRepack v1.0.1")
         self.setGeometry(200, 200, 600, 500)
 
         layout = QVBoxLayout()
