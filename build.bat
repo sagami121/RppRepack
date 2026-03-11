@@ -53,9 +53,9 @@ echo [DONE] Build completed
 echo [START] Package output
 if not exist "%PACKAGE_DIR%" mkdir "%PACKAGE_DIR%"
 
-@REM main.dist の中身（GUIと依存関係）をパッケージディレクトリにコピー
+@REM
 xcopy /E /I /Y "%OUTPUT_DIR%\main.dist\*" "%PACKAGE_DIR%\" >nul
-@REM cli.dist の中身（CLI）をパッケージディレクトリにコピー（共通のDLLは上書きされます）
+@REM 
 xcopy /E /I /Y "%OUTPUT_DIR%\cli.dist\*" "%PACKAGE_DIR%\" >nul
 
 if errorlevel 1 (
