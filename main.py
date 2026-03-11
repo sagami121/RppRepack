@@ -63,6 +63,16 @@ class RppRepack(QWidget):
         self.setWindowTitle("RppRepack v1.0.1")
         self.setGeometry(200, 200, 600, 500)
 
+        # ウィンドウアイコンの設定
+        icon_path = os.path.join(os.path.dirname(__file__), "RppRepack.ico")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        elif getattr(sys, 'frozen', False):
+            # Nuitka等で実行されている場合のパス
+            icon_path = os.path.join(os.path.dirname(sys.executable), "RppRepack.ico")
+            if os.path.exists(icon_path):
+                self.setWindowIcon(QIcon(icon_path))
+
         layout = QVBoxLayout()
 
         self.drop_area = QLabel("ここに RPP ファイルをドラッグ & ドロップ")

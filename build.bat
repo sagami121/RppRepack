@@ -7,7 +7,7 @@ set "APP_NAME=RppRepack"
 set "CLI_NAME=RppRepack-cli"
 set "OUTPUT_DIR=nuitka_dist"
 set "PACKAGE_DIR=%OUTPUT_DIR%\%APP_NAME%"
-set "ICON_FILE=app_icon.ico"
+set "ICON_FILE=RppRepack.ico"
 set "NUITKA_CACHE_DIR=%CD%\.nuitka-cache"
 if not exist "%NUITKA_CACHE_DIR%" mkdir "%NUITKA_CACHE_DIR%"
 
@@ -33,7 +33,7 @@ if exist "%ICON_FILE%" (
     set "ICON_OPT=--windows-icon-from-ico="%ICON_FILE%""
 )
 
-python -m nuitka --standalone --disable-cache=all --assume-yes-for-downloads --enable-plugin=pyqt6 --windows-console-mode=disable %ICON_OPT% --output-dir="%OUTPUT_DIR%" --output-filename="%APP_NAME%.exe" --include-data-dir=assets=assets main.py
+python -m nuitka --standalone --disable-cache=all --assume-yes-for-downloads --enable-plugin=pyqt6 --windows-console-mode=disable %ICON_OPT% --output-dir="%OUTPUT_DIR%" --output-filename="%APP_NAME%.exe" --include-data-dir=assets=assets --include-data-files=RppRepack.ico=RppRepack.ico main.py
 
 if errorlevel 1 (
   echo [ERROR] GUI Build failed.
